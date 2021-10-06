@@ -1,16 +1,56 @@
 import React, {Component} from 'react';
 import Header from "../elements/header";
 import Sidebar from "../elements/sidebar";
-import {Link, Redirect} from "react-router-dom";
+import {Link} from "react-router-dom";
 import axios from 'axios';
+import { trackPromise } from "react-promise-tracker";
 
 export default class AddPage extends Component {
 
+    state = {
+        results: [],
+        nama: "",
+        nik: "",
+        nohp: "",
+        email: "",
+        password: "",
+        modalIsOpen: false,
+    };
+    
+    handleSubmit = (e) => {
+        e.preventDefault();
+    
+        const Data = {
+          nama: this.state.nama,
+          nik: this.state.nik,
+          nohp: this.state.nohp,
+          email: this.state.email,
+          password: this.state.password,
+        };
+        
+        trackPromise(
+        axios.post("https://absensi-e2899-default-rtdb.firebaseio.com/karyawan.json", Data).then((response) => {
+            console.log(response);
+    
+            const results = [
+              ...this.state.results,
+              { ...Data, id: response.data.name },
+            ];
+    
+            this.setState({
+                results: results,
+                nama: "",
+                nik: "",
+                nohp: "",
+                email: "",
+                password: "",
+            });
+          })
+        );
+      };
+
     render() {
-        // const isLoading = this.state.isLoading;
-        // if (this.state.toDashboard === true) {
-        //     return <Redirect to='/' />
-        // }
+        const { nama, nik, nohp, email, password } = this.props;
         return (
             <div>
                 <Header/>
@@ -39,7 +79,9 @@ export default class AddPage extends Component {
                                                 <input
                                                     type="text"
                                                     class="form-control"
-                                                    id="staticEmail"
+                                                    name="nama"
+                                                    value={nama}
+                                                    onChange={this.handleChange}
                                                     required
                                                 ></input>
                                                 </div>
@@ -54,7 +96,9 @@ export default class AddPage extends Component {
                                                 <input
                                                     type="text"
                                                     class="form-control"
-                                                    id="staticEmail"
+                                                    value={nik}
+                                                    name="nik"
+                                                    onChange={this.handleChange}
                                                     required
                                                 ></input>
                                                 </div>
@@ -67,9 +111,11 @@ export default class AddPage extends Component {
                                                 </label>
                                                 <div class="col-sm-10">
                                                 <input
-                                                    type="text"
+                                                    type="number"
                                                     class="form-control"
-                                                    id="staticEmail"
+                                                    name="nohp"
+                                                    value={nohp}
+                                                    onChange={this.handleChange}
                                                     required
                                                 ></input>
                                                 </div>
@@ -82,9 +128,11 @@ export default class AddPage extends Component {
                                                 </label>
                                                 <div class="col-sm-10">
                                                 <input
-                                                    type="text"
+                                                    type="email"
                                                     class="form-control"
-                                                    id="staticEmail"
+                                                    value={email}
+                                                    onChange={this.handleChange}
+                                                    name="email"
                                                     required
                                                 ></input>
                                                 </div>
@@ -97,23 +145,18 @@ export default class AddPage extends Component {
                                                 </label>
                                                 <div class="col-sm-10">
                                                 <input
-                                                    type="text"
+                                                    type="password"
                                                     class="form-control"
-                                                    id="staticEmail"
+                                                    name="password"
+                                                    value={password}
+                                                    onChange={this.handleChange}
                                                     required
                                                 ></input>
                                                 </div>
                                             </div>
                                         </div>
-                                        <button className="btn btn-primary btn-block" type="submit" >Add Employee &nbsp;&nbsp;&nbsp;
-                                            {/* {isLoading ? (
-                                                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                             ) : (
-                                                 <span></span>
-                                             )} */}
-                                        </button>
+                                        <input type="submit"/>
                                     </form>
-                                    {/* {this.renderRedirect()} */}
                                 </div>
                             </div>
                         </div>

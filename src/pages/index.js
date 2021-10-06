@@ -14,7 +14,6 @@ export default class Index extends Component {
           .then(res => {
             const persons = res.data;
             this.setState({ persons });
-            
         })
     }
 
