@@ -6,9 +6,14 @@ import axios from 'axios';
 
 export default class Index extends Component {
     state = {
-        persons: []
+        persons: [],
+        id: '',
       }
     
+    handleChange = event => {
+        this.setState({ id: event.target.value });
+    }
+
     componentDidMount() {
         axios.get(`https://absensi-e2899-default-rtdb.firebaseio.com/karyawan.json`)
           .then(res => {
@@ -16,6 +21,16 @@ export default class Index extends Component {
             this.setState({ persons });
         })
     }
+    
+    handleClickDelete = event => {
+        event.preventDefault();
+
+        axios.delete(`https://absensi-e2899-default-rtdb.firebaseio.com/karywan.json/${this.state.id}`)
+        .then(res => {
+            console.log(res);
+            console.log(res.data);
+        })
+      };
 
     render() {
         if (this.state.toDashboard === true) {
@@ -54,8 +69,8 @@ export default class Index extends Component {
                                         </thead>
                                         <tbody>
                                             {Object.values(this.state.persons).map((persons , index)=>
-                                                <tr key={persons.id}>
-                                                    <td>{index + 1}</td>
+                                                <tr key={persons.id} >
+                                                    <td name="id" onChange={this.handleChange}>{index + 1}</td>
                                                     <td>{persons.nama}</td>
                                                     <td>{persons.nik}</td>
                                                     <td>{persons.nohp}</td>
@@ -64,7 +79,7 @@ export default class Index extends Component {
                                                     <td className="text-center">
                                                         <Link className="btn btn-sm btn-info" to={{ pathname: 'edit', search: '?id=' + persons.id }}>Edit</Link>
                                                         &nbsp; | &nbsp;
-                                                        <Link value={persons.id} className="btn btn-sm btn-danger"  onClick={this.handleClickDelete} >Delete</Link>
+                                                        <button value={persons.id} className="btn btn-sm btn-danger" onClick={this.handleClickDelete} >Delete</button>
                                                     </td>
                                                 </tr>)
                                             }

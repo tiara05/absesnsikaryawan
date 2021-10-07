@@ -6,11 +6,63 @@ import Sidebar from "../elements/sidebar";
 
 export default class EditPage extends Component {
 
+
+    state = {
+        id: '',
+        redirect: false,
+        isLoading: false
+    };
+
+    componentDidMount() {
+        const id = this.props.location.search[4];
+        axios.get('https://absensi-e2899-default-rtdb.firebaseio.com/karyawan.json' + id,)
+            .then(response => {
+                const emp = response.data.employee;
+                this.setState({id: emp.id });
+                document.getElementById('inputnama').value = emp.nama;
+                document.getElementById('inputnik').value = emp.nik;
+                document.getElementById('inputnohp').value = emp.nohp;
+                document.getElementById('inputemail').value = emp.email;
+                document.getElementById('inputpassword').value = emp.password;
+            })
+            .catch(error => {
+                this.setState({ toDashboard: true });
+                console.log(error);
+            });
+        
+    }
+
+    handleSubmit = event => {
+        event.preventDefault();
+        this.setState({isLoading: true});
+        const token = localStorage.getItem('token');
+        const url = 'https://absensi-e2899-default-rtdb.firebaseio.com/karyawan.json'+ this.state.id;
+        const name = document.getElementById('inputName').value;
+        const phone = document.getElementById('inputPhone').value;
+        const email = document.getElementById('inputEmail').value;
+        const location = document.getElementById('inputLoca').value;
+        const empid = document.getElementById('inputEmpId').value;
+        const company = document.getElementById('inputComp').value;
+        axios.put(url, { name: name, phone: phone, email:email, location:location, emp_id:empid, company:company, token:token })
+            .then(result => {
+                if (result.data.status) {
+                    this.setState({redirect: true, isLoading: false})
+                }
+            })
+            .catch(error => {
+                this.setState({ toDashboard: true });
+                console.log(error);
+            });
+    };
+
+    renderRedirect = () => {
+        if (this.state.redirect) {
+            return <Redirect to='/dashboard' />
+        }
+    };
+
+
     render() {
-        // const isLoading = this.state.isLoading;
-        // if (this.state.toDashboard === true) {
-        //     return <Redirect to='/' />
-        // }
         return (
             <div>
                 <Header/>
@@ -22,7 +74,7 @@ export default class EditPage extends Component {
                                 <li className="breadcrumb-item">
                                     <Link to={'/dashboard'} >Dashboard</Link>
                                 </li>
-                                <li className="breadcrumb-item active">Edit</li>
+                                <li className="breadcrumb-item active">Add</li>
                             </ol>
                         </div>
                         <div className="container-fluid">
@@ -37,9 +89,12 @@ export default class EditPage extends Component {
                                                 </label>
                                                 <div class="col-sm-10">
                                                 <input
+                                                    id="inputnama"
                                                     type="text"
                                                     class="form-control"
-                                                    id="staticEmail"
+                                                    name="nama"
+                                                    value={this.nama}
+                                                    onChange={this.handleChange}
                                                     required
                                                 ></input>
                                                 </div>
@@ -52,9 +107,12 @@ export default class EditPage extends Component {
                                                 </label>
                                                 <div class="col-sm-10">
                                                 <input
+                                                    id="inputnik"
                                                     type="text"
                                                     class="form-control"
-                                                    id="staticEmail"
+                                                    name="nik"
+                                                    value={this.nik}
+                                                    onChange={this.handleChange}
                                                     required
                                                 ></input>
                                                 </div>
@@ -67,9 +125,12 @@ export default class EditPage extends Component {
                                                 </label>
                                                 <div class="col-sm-10">
                                                 <input
-                                                    type="text"
+                                                    id="inputnohp"
+                                                    type="number"
                                                     class="form-control"
-                                                    id="staticEmail"
+                                                    name="nohp"
+                                                    value={this.nohp}
+                                                    onChange={this.handleChange}
                                                     required
                                                 ></input>
                                                 </div>
@@ -82,9 +143,12 @@ export default class EditPage extends Component {
                                                 </label>
                                                 <div class="col-sm-10">
                                                 <input
+                                                    id="inputemail"
                                                     type="text"
                                                     class="form-control"
-                                                    id="staticEmail"
+                                                    value={this.email}
+                                                    onChange={this.handleChange}
+                                                    name="email"
                                                     required
                                                 ></input>
                                                 </div>
@@ -97,28 +161,22 @@ export default class EditPage extends Component {
                                                 </label>
                                                 <div class="col-sm-10">
                                                 <input
-                                                    type="text"
+                                                    id="inputpassword"
+                                                    type="password"
                                                     class="form-control"
-                                                    id="staticEmail"
+                                                    value={this.password}
+                                                    name="password"
+                                                    onChange={this.handleChange}
                                                     required
                                                 ></input>
                                                 </div>
                                             </div>
                                         </div>
-                                        <button className="btn btn-primary btn-block" type="submit" >Add Employee &nbsp;&nbsp;&nbsp;
-                                            {/* {isLoading ? (
-                                                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                                             ) : (
-                                                 <span></span>
-                                             )} */}
-                                        </button>
+                                        <input type="submit"/>
                                     </form>
-                                    {/* {this.renderRedirect()} */}
                                 </div>
                             </div>
                         </div>
-
-                        
                     </div>
                 </div>
             </div>

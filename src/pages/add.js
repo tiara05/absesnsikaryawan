@@ -1,9 +1,11 @@
 import React, {Component} from 'react';
 import Header from "../elements/header";
 import Sidebar from "../elements/sidebar";
-import {Link} from "react-router-dom";
+import {Link, Redirect} from "react-router-dom";
 import axios from 'axios';
 import { trackPromise } from "react-promise-tracker";
+import { toast } from "react-toastify";
+
 
 export default class AddPage extends Component {
 
@@ -15,8 +17,21 @@ export default class AddPage extends Component {
         email: "",
         password: "",
         modalIsOpen: false,
+        redirect: false,
+        toDashboard: false,
+        isLoading: false,
     };
-    
+
+    handleChange = event => {
+        this.setState(
+            { nama: document.getElementById("nama").value ,
+            nik: document.getElementById("nik").value ,
+            nohp: document.getElementById("nohp").value ,
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value }
+        );
+    }
+
     handleSubmit = (e) => {
         e.preventDefault();
     
@@ -45,12 +60,23 @@ export default class AddPage extends Component {
                 email: "",
                 password: "",
             });
+
+            toast.success("You added a new entry!");
           })
         );
       };
 
+    renderRedirect = () => {
+        if (this.state.redirect) {
+            return <Redirect to='/dashboard' />
+        }
+    };
+
     render() {
-        const { nama, nik, nohp, email, password } = this.props;
+        const isLoading = this.state.isLoading;
+        if (this.state.toDashboard === true) {
+            return <Redirect to='/' />
+        }
         return (
             <div>
                 <Header/>
@@ -77,10 +103,11 @@ export default class AddPage extends Component {
                                                 </label>
                                                 <div class="col-sm-10">
                                                 <input
+                                                    id="nama"
                                                     type="text"
                                                     class="form-control"
                                                     name="nama"
-                                                    value={nama}
+                                                    value={this.nama}
                                                     onChange={this.handleChange}
                                                     required
                                                 ></input>
@@ -94,10 +121,11 @@ export default class AddPage extends Component {
                                                 </label>
                                                 <div class="col-sm-10">
                                                 <input
+                                                    id="nik"
                                                     type="text"
                                                     class="form-control"
-                                                    value={nik}
                                                     name="nik"
+                                                    value={this.nik}
                                                     onChange={this.handleChange}
                                                     required
                                                 ></input>
@@ -111,10 +139,11 @@ export default class AddPage extends Component {
                                                 </label>
                                                 <div class="col-sm-10">
                                                 <input
+                                                    id="nohp"
                                                     type="number"
                                                     class="form-control"
                                                     name="nohp"
-                                                    value={nohp}
+                                                    value={this.nohp}
                                                     onChange={this.handleChange}
                                                     required
                                                 ></input>
@@ -128,9 +157,10 @@ export default class AddPage extends Component {
                                                 </label>
                                                 <div class="col-sm-10">
                                                 <input
-                                                    type="email"
+                                                    id="email"
+                                                    type="text"
                                                     class="form-control"
-                                                    value={email}
+                                                    value={this.email}
                                                     onChange={this.handleChange}
                                                     name="email"
                                                     required
@@ -145,18 +175,26 @@ export default class AddPage extends Component {
                                                 </label>
                                                 <div class="col-sm-10">
                                                 <input
+                                                    id="password"
                                                     type="password"
                                                     class="form-control"
+                                                    value={this.password}
                                                     name="password"
-                                                    value={password}
                                                     onChange={this.handleChange}
                                                     required
                                                 ></input>
                                                 </div>
                                             </div>
                                         </div>
-                                        <input type="submit"/>
+                                        <button className="btn btn-primary btn-block" type="submit" disabled={this.state.isLoading ? true : false}>Add Employee &nbsp;&nbsp;&nbsp;
+                                            {isLoading ? (
+                                                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                                ) : (
+                                                <span></span>
+                                            )}
+                                        </button>
                                     </form>
+                                    {this.renderRedirect()}
                                 </div>
                             </div>
                         </div>
